@@ -1,6 +1,7 @@
 package com.notifications.controllers;
 
 import com.notifications.dtos.CreateMessageRequest;
+import com.notifications.dtos.NotificationLogHistoryResponse;
 import com.notifications.dtos.NotificationResponse;
 import com.notifications.services.NotificationService;
 import jakarta.validation.Valid;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import java.util.List;
 
 /**
  * REST controller responsible for exposing notification operations.
@@ -44,5 +47,15 @@ public class NotificationController {
     @ResponseStatus(HttpStatus.CREATED)
     public NotificationResponse createNotification(@Valid @RequestBody CreateMessageRequest request) {
         return notificationService.createAndSendNotification(request);
+    }
+
+    /**
+     * Retrieves notification log history ordered from newest to oldest.
+     *
+     * @return notification delivery history
+     */
+    @GetMapping("/logs")
+    public List<NotificationLogHistoryResponse> getNotificationLogs() {
+        return notificationService.findNotificationLogHistory();
     }
 }

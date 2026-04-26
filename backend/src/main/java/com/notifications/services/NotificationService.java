@@ -2,6 +2,7 @@ package com.notifications.services;
 
 import com.notifications.config.NotificationRetryProperties;
 import com.notifications.dtos.CreateMessageRequest;
+import com.notifications.dtos.NotificationLogHistoryResponse;
 import com.notifications.dtos.NotificationLogResponse;
 import com.notifications.dtos.NotificationResponse;
 import com.notifications.dtos.UserSubscription;
@@ -203,5 +204,41 @@ public class NotificationService {
             Integer attempts,
             String errorMessage
     ) {
+    }
+
+    /**
+     * Retrieves notification delivery logs ordered from newest to oldest.
+     *
+     * <p>This method supports the log history requirement from the user interface.
+     * It returns all relevant persisted delivery information without exposing JPA
+     * entities directly to the client.</p>
+     *
+     * @return notification log history ordered by creation timestamp descending
+     */
+    @Transactional(readOnly = true)
+    public List<NotificationLogHistoryResponse> findNotificationLogHistory() {
+        return notificationLogRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(this::toLogHistoryResponse)
+                .toList();
+    }
+
+    private NotificationLogHistoryResponse toLogHistoryResponse(NotificationLog notificationLog) {
+        return new NotificationLogHistoryResponse(
+                notificationLog.getId(),
+                notificationLog.getMessage().getId(),
+                notificationLog.getMessage().getCategory().getCode(),
+                notificationLog.getMessage().getBody(),
+                notificationLog.getChannel().getCode(),
+                notificationLog.getUserId(),
+                notificationLog.getUserName(),
+                notificationLog.getUserEmail(),
+                notificationLog.getUserPhone(),
+                notificationLog.getStatus(),
+                notificationLog.getAttempts(),
+                notificationLog.getErrorMessage(),
+                notificationLog.getCreatedAt(),
+                notificationLog.getUpdatedAt()
+        );
     }
 }
