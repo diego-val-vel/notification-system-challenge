@@ -1,38 +1,4 @@
 services:
-  backend:
-    container_name: notification-system-backend
-    image: maven:3.9-eclipse-temurin-21
-    working_dir: /app
-    command: tail -f /dev/null
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      SERVER_PORT: 8080
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: notifications_db
-      DB_USER: notifications_user
-      DB_PASSWORD: notifications_password
-    depends_on:
-      - db
-    volumes:
-      - ./backend:/app
-
-  frontend:
-    container_name: notification-system-frontend
-    image: node:20-alpine
-    working_dir: /workspace
-    command: sh -c "tail -f /dev/null"
-    ports:
-      - "5174:5173"
-    environment:
-      VITE_API_BASE_URL: http://localhost:8080
-    depends_on:
-      - backend
-    volumes:
-      - ./frontend:/workspace
-
   db:
     image: postgres:16-alpine
     container_name: notification-system-db
@@ -45,6 +11,53 @@ services:
       - "5432:5432"
     volumes:
       - notification_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notifications_user -d notifications_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    container_name: notification-system-backend
+    image: maven:3.9-eclipse-temurin-21
+    working_dir: /app
+    command: sh -c "mvn clean package && java -jar target/notification-system-0.0.1-SNAPSHOT.jar"
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SERVER_PORT: 8080
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: notifications_db
+      DB_USER: notifications_user
+      DB_PASSWORD: notifications_password
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/8080'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
+  frontend:
+    container_name: notification-system-frontend
+    image: node:20-alpine
+    working_dir: /workspace
+    command: sh -c "cd app && npm install && npm run dev"
+    ports:
+      - "5174:5173"
+    environment:
+      VITE_API_BASE_URL: http://localhost:8080
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./frontend:/workspace
 
 volumes:
   notification_postgres_data:
