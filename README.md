@@ -4,6 +4,14 @@ A full-stack notification system built with Spring Boot and React, designed with
 
 ---
 
+## Demo Video
+
+Watch the full end-to-end demo here:
+
+https://drive.google.com/file/d/1EZA8sIXKGrSkFuq8OqiP3LH_LY0myOlp/view?usp=sharing
+
+---
+
 ## Overview
 
 This application allows sending categorized notifications to users subscribed to specific categories and delivery channels (Email, SMS, Push).
