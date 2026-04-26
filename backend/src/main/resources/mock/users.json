@@ -1,0 +1,29 @@
+[
+  {
+    "id": "user-001",
+    "name": "Alice Johnson",
+    "email": "alice@example.com",
+    "phone": "+5215550000001",
+    "deviceToken": "device-token-alice",
+    "subscribedCategories": ["SPORTS", "FINANCE"],
+    "subscribedChannels": ["EMAIL", "SMS"]
+  },
+  {
+    "id": "user-002",
+    "name": "Bob Smith",
+    "email": "bob@example.com",
+    "phone": "+5215550000002",
+    "deviceToken": "device-token-bob",
+    "subscribedCategories": ["MOVIES"],
+    "subscribedChannels": ["EMAIL", "PUSH"]
+  },
+  {
+    "id": "user-003",
+    "name": "Carol White",
+    "email": "carol@example.com",
+    "phone": "+5215550000003",
+    "deviceToken": "device-token-carol",
+    "subscribedCategories": ["SPORTS", "MOVIES"],
+    "subscribedChannels": ["SMS", "PUSH"]
+  }
+]
